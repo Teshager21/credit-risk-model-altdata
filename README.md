@@ -6,19 +6,60 @@
 
 ## 🧠 Credit Scoring Business Understanding
 
+
+### 1️⃣ How does the Basel II Accord’s emphasis on risk measurement influence our need for an interpretable and well-documented model?
+
+The **Basel II Capital Accord** mandates that financial institutions align their capital reserves with the actual level of **credit risk** they face. This requires banks to **quantify risk exposures** reliably and defendably. Consequently, models must not only be accurate but also **interpretable, transparent, and auditable**.
+
+In this context, simple models like **logistic regression with Weight of Evidence (WoE) encoding** are preferred because:
+- They offer **clear explanations** for decision-making.
+- They support **regulatory reporting** and internal governance.
+- They reduce the risk of **model uncertainty** and **bias claims** in audits.
+
+Without interpretability, complex models (even if more accurate) may **fail regulatory scrutiny** or be non-actionable for internal risk teams.
+
+---
+
+### 2️⃣ Since we lack a direct "default" label, why is creating a proxy variable necessary, and what are the potential business risks?
+
+In traditional credit modeling, the **target variable** is a binary label indicating whether a borrower defaulted. However, our dataset lacks this label. To address this, we engineer a **proxy variable** using behavioral signals such as **Recency, Frequency, and Monetary (RFM)** activity to infer disengaged (potentially high-risk) customers.
+
+This is necessary to:
+- Enable **supervised learning** in the absence of ground truth.
+- Leverage **alternative data** from e-commerce platforms for financial modeling.
+
+However, the use of a proxy introduces **business risks**:
+- **Label Noise**: Proxy labels may **misclassify customers**, leading to biased predictions.
+- **Overfitting to behavior patterns**, not actual financial defaults.
+- **Missed revenue** from falsely labeled good customers (false negatives).
+- **Increased exposure** from wrongly approved risky customers (false positives).
+
+Thus, clear **documentation, validation**, and **human-in-the-loop verification** are essential before using the model in production.
+
+---
+
+### 3️⃣ What are the key trade-offs between using a simple, interpretable model (like Logistic Regression with WoE) versus a complex, high-performance model (like Gradient Boosting) in a regulated financial context?
+
+| Aspect                     | Logistic Regression + WoE              | Gradient Boosting / Complex Models      |
+|---------------------------|----------------------------------------|-----------------------------------------|
+| **Interpretability**      | ✅ High — easy to explain               | ❌ Low — requires tools like SHAP/LIME   |
+| **Regulatory Acceptance** | ✅ Strong — aligns with Basel II        | ⚠️ Requires rigorous documentation       |
+| **Performance**           | ⚠️ Moderate — linear assumptions        | ✅ High — captures non-linear patterns   |
+| **Speed & Simplicity**    | ✅ Fast to train, easy to deploy        | ⚠️ Slower training and deployment        |
+| **Use Case Fit**          | ✅ Ideal for regulated environments     | ✅ Ideal for maximizing accuracy         |
+
+In regulated settings like banking, it’s often better to **start with interpretable models**, and justify any use of complex models with **robust validation and explainability frameworks**.
+
+---
+
+📌 _Summary_: The Basel II Accord compels us to strike a balance between **accuracy** and **interpretability**. Given the absence of default labels, proxy modeling is necessary but must be approached cautiously. In regulated contexts, **simple models offer clarity and compliance**, while complex models offer accuracy at the cost of oversight burdens.
+
+
 ### 📌 Why Interpretable Models Matter
 Under the **Basel II Capital Accord**, financial institutions must quantify credit risk and maintain adequate capital. This creates a need for **interpretable, transparent, and auditable models**. Regulatory compliance prefers models where decisions can be explained (e.g., using Weight of Evidence or logistic regression), rather than opaque black-box models.
 
 ### 📌 Why We Need a Proxy Default Variable
 The dataset lacks a direct **loan default indicator**. We create a **proxy target** using customer disengagement signals via **RFM (Recency, Frequency, Monetary) analysis**. However, this introduces potential **label noise**, and predictions may suffer from **false positives** or **missed defaults**, impacting lending decisions.
-
-### 📌 Trade-Offs: Simplicity vs. Complexity
-| Trade-off | Simple Model (e.g., Logistic Regression + WoE) | Complex Model (e.g., XGBoost, GBM) |
-|----------|------------------------------------------|----------------------------------|
-| **Interpretability** | ✅ High – Easy to explain to auditors | ❌ Low – Requires SHAP/LIME |
-| **Regulatory Trust** | ✅ Strong compliance | ⚠️ Requires justification |
-| **Performance** | ⚠️ Moderate | ✅ High |
-| **Deployment Ease** | ✅ Simple | ⚠️ More infrastructure needed |
 
 ---
 
