@@ -2,6 +2,7 @@
 
 # import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
+import numpy as np
 
 
 class CustomerAggregates(BaseEstimator, TransformerMixin):
@@ -35,3 +36,15 @@ class CustomerAggregates(BaseEstimator, TransformerMixin):
     def transform(self, X):
         X_merged = X.merge(self.agg_df_, on=self.groupby_col, how="left")
         return X_merged
+
+    # Inside CustomerAggregates
+
+    def get_feature_names_out(self, input_features=None):
+        return np.array(
+            [
+                "total_transaction_amount",
+                "avg_transaction_amount",
+                "std_transaction_amount",
+                "transaction_count",
+            ]
+        )

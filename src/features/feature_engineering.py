@@ -1,3 +1,4 @@
+# src/features/feature_engineering.py
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
@@ -8,6 +9,10 @@ from features.customer_aggregates import CustomerAggregates
 
 
 def build_feature_pipeline():
+    """
+    Create the full sklearn Pipeline for feature engineering.
+    """
+
     datetime_col = "TransactionStartTime"
 
     numeric_features = [
@@ -49,7 +54,8 @@ def build_feature_pipeline():
             ("numeric", numeric_transformer, numeric_features),
             ("woe", ManualWOEEncoder(features=woe_features), woe_features),
             ("onehot", onehot_transformer, onehot_features),
-        ]
+        ],
+        remainder="drop",
     )
 
     pipeline = Pipeline(
