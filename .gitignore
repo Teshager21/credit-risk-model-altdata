@@ -19,6 +19,8 @@ instance/
 !mlruns/
 mlruns.db
 mlartifacts/
+mlmodels/
+mlruns/924735591798873185
 
 
 
