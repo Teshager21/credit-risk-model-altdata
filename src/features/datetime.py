@@ -31,4 +31,12 @@ class DateTimeFeaturesExtractor(BaseEstimator, TransformerMixin):
         ]
 
     def get_feature_names_out(self, input_features=None):
-        return np.array([f"{self.column}_hour", f"{self.column}_dayofweek"])
+        return np.array(
+            [
+                f"{self.column}_hour",
+                f"{self.column}_day",
+                f"{self.column}_month",
+                f"{self.column}_weekday",
+                f"{self.column}_year",
+            ]
+        )
