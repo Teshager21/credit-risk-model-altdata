@@ -16,14 +16,13 @@ model = mlflow.pyfunc.load_model(model_uri=f"models:/{MODEL_NAME}/{MODEL_STAGE}"
 
 @app.post("/predict", response_model=PredictionResponse)
 def predict(data: CustomerData):
-    # Convert incoming JSON to DataFrame
     df = pd.DataFrame([data.dict()])
+
+    # Convert object column to category dtype
+    df["ProductCategory"] = df["ProductCategory"].astype("category")
+
     prediction = model.predict(df)
-
-    # Ensure it's a float, even if model returns an array
-    if hasattr(prediction, "__len__"):
-        prediction_value = float(prediction[0])
-    else:
-        prediction_value = float(prediction)
-
+    prediction_value = (
+        float(prediction[0]) if hasattr(prediction, "__len__") else float(prediction)
+    )
     return PredictionResponse(risk_probability=prediction_value)

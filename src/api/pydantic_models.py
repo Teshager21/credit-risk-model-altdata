@@ -4,10 +4,8 @@ from pydantic import BaseModel
 
 
 class CustomerData(BaseModel):
-    # Replace with your real model's features!
-    feature1: float
-    feature2: float
-    feature3: float
+    Amount: float
+    ProductCategory: str
 
 
 class PredictionResponse(BaseModel):
