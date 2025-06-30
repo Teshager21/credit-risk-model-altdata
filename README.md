@@ -6,7 +6,6 @@
 
 ## 🧠 Credit Scoring Business Understanding
 
-
 ### 1️⃣ How does the Basel II Accord’s emphasis on risk measurement influence our need for an interpretable and well-documented model?
 
 The **Basel II Capital Accord** mandates that financial institutions align their capital reserves with the actual level of **credit risk** they face. This requires banks to **quantify risk exposures** reliably and defendably. Consequently, models must not only be accurate but also **interpretable, transparent, and auditable**.
@@ -41,7 +40,7 @@ Thus, clear **documentation, validation**, and **human-in-the-loop verification*
 ### 3️⃣ What are the key trade-offs between using a simple, interpretable model (like Logistic Regression with WoE) versus a complex, high-performance model (like Gradient Boosting) in a regulated financial context?
 
 | Aspect                     | Logistic Regression + WoE              | Gradient Boosting / Complex Models      |
-|---------------------------|----------------------------------------|-----------------------------------------|
+|----------------------------|----------------------------------------|-----------------------------------------|
 | **Interpretability**      | ✅ High — easy to explain               | ❌ Low — requires tools like SHAP/LIME   |
 | **Regulatory Acceptance** | ✅ Strong — aligns with Basel II        | ⚠️ Requires rigorous documentation       |
 | **Performance**           | ⚠️ Moderate — linear assumptions        | ✅ High — captures non-linear patterns   |
@@ -53,13 +52,6 @@ In regulated settings like banking, it’s often better to **start with interpre
 ---
 
 📌 _Summary_: The Basel II Accord compels us to strike a balance between **accuracy** and **interpretability**. Given the absence of default labels, proxy modeling is necessary but must be approached cautiously. In regulated contexts, **simple models offer clarity and compliance**, while complex models offer accuracy at the cost of oversight burdens.
-
-
-### 📌 Why Interpretable Models Matter
-Under the **Basel II Capital Accord**, financial institutions must quantify credit risk and maintain adequate capital. This creates a need for **interpretable, transparent, and auditable models**. Regulatory compliance prefers models where decisions can be explained (e.g., using Weight of Evidence or logistic regression), rather than opaque black-box models.
-
-### 📌 Why We Need a Proxy Default Variable
-The dataset lacks a direct **loan default indicator**. We create a **proxy target** using customer disengagement signals via **RFM (Recency, Frequency, Monetary) analysis**. However, this introduces potential **label noise**, and predictions may suffer from **false positives** or **missed defaults**, impacting lending decisions.
 
 ---
 
@@ -98,7 +90,7 @@ credit-risk-model-altdata/
 - 🧮 **RFM Segmentation** to create a proxy default label
 - 🏗️ **Feature Engineering Pipeline** using `sklearn.pipeline`
 - 🤖 **ML Models**: Logistic Regression, Random Forest, Gradient Boosting
-- 🧪 **MLFlow tracking** & experiment versioning
+- 🧪 **MLflow tracking** & experiment versioning
 - 🧪 **Unit testing** with Pytest
 - 🚀 **API Deployment** using FastAPI + Docker
 - 🔁 **CI/CD**: GitHub Actions with Linting + Testing
@@ -136,7 +128,7 @@ credit-risk-model-altdata/
 git clone https://github.com/your-username/credit-risk-model-altdata.git
 cd credit-risk-model-altdata
 
-# Create virtual env and install requirements
+# Create virtual environment and install dependencies
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
@@ -150,6 +142,41 @@ uvicorn src.api.main:app --reload
 # Run tests
 pytest tests/
 ```
+
+---
+
+## 💻 API Usage Example
+
+Once the FastAPI server is running, you can test the prediction endpoint:
+
+```bash
+curl -X POST "http://127.0.0.1:8000/predict" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "CustomerId": "12345",
+    "TransactionStartTime": "2025-06-30T09:00:00",
+    "Amount": 1000000.0,
+    "ChannelId": "web",
+    "ProductId": "prod_001",
+    "ProductCategory": "electronics",
+    "PricingStrategy": 2,
+    "ProviderId": "prov_123",
+    "Value": 1000000.0,
+    "Amount_log": 11.5,
+    "Amount_capped": 1000000.0,
+    "is_large_transaction": 1
+  }'
+```
+
+**Sample Response:**
+
+```json
+{
+  "risk_probability": 0.376
+}
+```
+
+This sends a transaction to the model and returns the predicted **risk probability** for the customer.
 
 ---
 
