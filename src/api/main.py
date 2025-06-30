@@ -1,28 +1,60 @@
 # src/api/main.py
 
 from fastapi import FastAPI
-from src.api.pydantic_models import CustomerData, PredictionResponse
-import mlflow.pyfunc
+from pydantic import BaseModel
 import pandas as pd
+import mlflow
+
+# import pickle
+
+# Import your feature pipeline if loaded separately
+# from src.features.feature_engineering import build_feature_pipeline
+
+# Load your pipeline and model
+import joblib
+import os
+
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
+pipeline_path = os.path.join(project_root, "src", "models", "feature_pipeline.joblib")
+
+feature_pipeline = joblib.load(pipeline_path)
+
+
+# Example loading MLflow model:
+# ✅ Replace this with your real run ID
+run_id = "ffa7ac57d11147d4a8707c15bbebf337"
+model_uri = f"runs:/{run_id}/model"
+model = mlflow.pyfunc.load_model(model_uri)
+
+
+# ✅ FULL Request Model with All Required Columns
+class PredictionRequest(BaseModel):
+    CustomerId: str
+    TransactionStartTime: str
+    Amount: float
+    ChannelId: str
+    ProductId: str
+    ProductCategory: str
+    PricingStrategy: int
+    ProviderId: str
+    Value: float
+    Amount_log: float
+    Amount_capped: float
+    is_large_transaction: int
+
 
 app = FastAPI()
 
-MODEL_NAME = "CreditRiskModel"
-MODEL_STAGE = "Production"
 
-# Load model from MLflow Model Registry
-model = mlflow.pyfunc.load_model(model_uri=f"models:/{MODEL_NAME}/{MODEL_STAGE}")
+@app.post("/predict")
+def predict(request: PredictionRequest):
+    # Convert request to DataFrame
+    input_df = pd.DataFrame([request.dict()])
 
+    # Transform with pipeline
+    X_transformed = feature_pipeline.transform(input_df)
 
-@app.post("/predict", response_model=PredictionResponse)
-def predict(data: CustomerData):
-    df = pd.DataFrame([data.dict()])
+    # Predict with model
+    prediction = model.predict(X_transformed)
 
-    # Convert object column to category dtype
-    df["ProductCategory"] = df["ProductCategory"].astype("category")
-
-    prediction = model.predict(df)
-    prediction_value = (
-        float(prediction[0]) if hasattr(prediction, "__len__") else float(prediction)
-    )
-    return PredictionResponse(risk_probability=prediction_value)
+    return {"prediction": int(prediction[0])}
