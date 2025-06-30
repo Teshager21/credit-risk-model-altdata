@@ -151,3 +151,6 @@ fix-deps:
 	make clean
 	make init DEP_MANAGER=$(DEP_MANAGER)
 	@echo "✅ Fix-deps complete."
+
+run:
+	PYTHONPATH=src uvicorn src.api.main:app --reload

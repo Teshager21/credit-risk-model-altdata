@@ -1,8 +1,11 @@
 import pandas as pd
 
 
-def load_processed_data(path):
-    df = pd.read_parquet(path)
-    X = df.drop(columns=["is_high_risk"])
-    y = df["is_high_risk"]
+def load_processed_data(filepath):
+    df = pd.read_parquet(filepath)
+    target_col = "FraudResult"
+    if target_col not in df.columns:
+        raise ValueError(f"Target column '{target_col}' not found in data.")
+    y = df[target_col]
+    X = df.drop(columns=[target_col], errors="ignore")
     return X, y
